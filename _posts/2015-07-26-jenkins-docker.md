@@ -49,7 +49,7 @@ header-img: "img/docker-logo.jpg"
 
 	CI脚本参考了https://github.com/kabisa/jenkins-docker 上的run-containerized,它要求Job定义Dockerfile文件，此文件可作为扩展，使得不同的项目可以先运行指定脚本构建一个新的Image，再在此image执行maven命令跑test case。然而如果不需要预先在跑case前在容器中执行某些命令，则没必要重新build一个image。另外，假如有case fail，脚本返回非0值使得Job变红，而我们只需要Job变黄，因此本文对run-centainerized脚本进行了一些修改和简化。
 
-	run-containerized
+	run-containerized:
 
 		#!/usr/bin/env bash
 		#
@@ -128,3 +128,10 @@ header-img: "img/docker-logo.jpg"
 		exit $(docker wait $CID)
 
 3. 新建Jenkins Job
+	
+	3.1 新建一个"自由风格的软件项目"
+	3.2 配置好CMS
+	3.3 新增构建步骤：Execute shell,调用run-containerized执行进行maven test
+	![run-containerized](img/docker_jenkins/build_shell.png)
+	3.4 新增构建后操作：Publish JUnit test result report, 从而把失败的test case归档。
+	![JUnit_report](img/docker_jenkins/junit_report.png)
