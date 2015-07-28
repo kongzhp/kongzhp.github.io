@@ -130,8 +130,13 @@ header-img: "img/docker-logo.jpg"
 3. 新建Jenkins Job
 	
 	3.1 新建一个"自由风格的软件项目"
+
 	3.2 配置好CMS
+
 	3.3 新增构建步骤：Execute shell,调用run-containerized执行进行maven test
+
 	![run-containerized]({{ site.baseurl }}/img/docker_jenkins/build_shell.png)
+	
 	3.4 新增构建后操作：Publish JUnit test result report, 从而把失败的test case归档。
+
 	![JUnit_report]({{ site.baseurl }}/img/docker_jenkins/junit_report.png)
