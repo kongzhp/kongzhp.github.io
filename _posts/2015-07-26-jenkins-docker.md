@@ -110,8 +110,8 @@ header-img: "img/docker-logo.jpg"
 		                        -e 'CI=true' \
 		                        -e 'DISPLAY=:0' \
 		                        $DOCKER_OPTS $DOCKER_IMG \
-		                        $@ ;\
-		                        [ \$? -eq 1 ] && echo '[Error] There are test case failed' ;\
+		                        bash -c "$@ ;\
+		                        [ \$? -eq 1 ] && echo '[ERROR] There are test failures.' ;\
 								chown -R $(id -u `whoami`) /workspace ;\
 		                        (exit 0)")
 		set +x
