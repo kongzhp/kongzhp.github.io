@@ -36,9 +36,6 @@ header-img: "img/docker-logo.jpg"
 		ENV M2_HOME=/usr/local/apache-maven-3.3.3
 		ENV MAVEN_OPTS="-Xms256m -Xmx512m"
 		ENV PATH=${M2_HOME}/bin:$PATH
-		ONTAINER_INIT /usr/local/bin/init-container
-		RUN echo '#!/usr/bin/env bash' > $CONTAINER_INIT ; chmod +x $CONTAINER_INIT
-		RUN echo 'mkdir -p /cache/m2 && ln -sf /cache/m2 ~/.m2' >> $CONTAINER_INIT
 
 	把上述Dockerfile与jdk-7u79-linux-x64.rpm/apache-maven-3.3.3-bin.tar.gz放在同一新建的空目录下(例如：~/ciimage)，执行以下命令：
 
