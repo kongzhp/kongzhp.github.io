@@ -7,7 +7,7 @@ author:     "Pete Kong"
 header-img: "img/post-bg-02.jpg"
 ---
 
-# 前言
+# Introduction
 
 《重构》这本书买了好久了，一开始看了一些，当时写代码写得少，看了也忘了，就没什么心思看。最近几乎每天都有review代码的机会，重新拾起这本书，写下读书笔记，希望能给大家提供一些帮助。
 
@@ -96,7 +96,7 @@ Maritin认为switch语句的问题在于重复，你会发现同样的switch语�
 
 2.  Replace Condition with Polymorphism
 
-	把类型码抽出来后，计算工资的职责就可以转移到具体的EmployeeType子类中了，而Employee类中的payAmount()则委托给EmployeeType的payMent方法。
+	把类型码抽出来后，计算工资的职责就可以转移到具体的EmployeeType子类中了，而Employee类中的payAmount()中的一坨switch语句则变为对EmployeeType的payAmount方法调用。
 
 		public class Salesman extends EmployeeType{
 		
