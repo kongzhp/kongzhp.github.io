@@ -2,7 +2,7 @@
 layout:     post
 title:      "Mastering Cassandra读书笔记（1）"
 subtitle:   "Cassandra Architecture"
-date:       2015-12-29 19:35:00
+date:       2016-01-11 19:35:00
 author:     "Pete Kong"
 header-img: "img/post-bg-02.jpg"
 ---
