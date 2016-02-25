@@ -2,7 +2,7 @@
 layout:     post
 title:      "Mastering Cassandra读书笔记（2）"
 subtitle:   "Effective CQL"
-date:       2016-01-11 19:35:00
+date:       2016-02-17 19:35:00
 author:     "Pete Kong"
 header-img: "img/post-bg-02.jpg"
 ---

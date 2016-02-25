@@ -67,7 +67,23 @@ cassandra的主要组件架构如下图所示：
 
 ![component]({{ site.baseurl }}/img/maserCass/component.PNG)
 
-Storage Layer的主类似StorageProxy,它负责处理所有请求。Messaging Layer负责节点内部通信,例如gossip。
+* Storage Layer的主类是StorageProxy,它负责处理所有请求。
+
+* Messaging Layer: 负责节点内部通信,使用gossip协议让所有节点获得其他节点的状态和位置信息。
+
+* Failure Detector:　负责根据收到某个节点发来gossip信息的timestamp判断该节点是dead还是alive。
+
+* Compaction Manager:　当SSTable的数量达到一定阈值的时候，Compaction就会被触发：
+	
+	1. 删除被过期的tombsones（当数据被删掉的时候，会标记tombstone）
+	2. merge row
+	3. 重建primary index和secondary index
+
+* Partioner: 把数据分发到不同的节点上
+	
+	1. Murmur3Partioner: 使用Murmur哈希分配数据，性能比RamdomPartioner好。
+	2. RamdomPartioner: 使用MD5哈希分发数据。
+	3. ByteOrderPartioner: 根据row key的bytes在集群的节点中分发数据，所以rows是在各节点中以字典顺序排序。这种partitioner容易造成热点。
 
 你需要知道四种重要的数据容器，MemTable是类似哈希表的数据结构，存在于内存中。它保存实际的cell data。 SStable是MemTable的磁盘版本。当memTable满了，它就需要持久化成SSTable。Commit log是一个append-only的日志，记录发送到cassandra的所有修改操作。
 
