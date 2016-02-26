@@ -11,7 +11,7 @@ header-img: "img/post-bg-02.jpg"
 
 数据在Cassandra里以嵌套的hash map形式存储。准确来说，它是分布式的嵌套的hash map,外层map是有序的分布在各个机器上，内存则存储于单台机器上。
 
-![dataModel]({{ site.baseurl }}/img/maserCass2/dataModel.PNG)
+![dataModel]({{ site.baseurl }}/img/masterCass2/dataModel.PNG)
 
 Cassandra的核心的数据结构是column-family(为兼容CQL3，改名为table)和Cell， 这些entity的容器叫做Keyspace。cell是Cassandra data model里的最小的单元。column-family包含着cells。cell本质是一个key-value对，key是cell name, value是cell value。cell对外表现为由cell name/cell value/timestamp组成的三元组，timestamp用作在read repair过程中解决冲突，最新的cell value胜出。所以client和server之间的时间同步十分重要。
 
@@ -25,7 +25,7 @@ Counters需要很严格的一致性，因此对counter执行update操作时，ca
 
 在CQL3语法里，column familiy和table是交叉使用的。在旧版本的cassadra中，column familiy是table旧叫法，而且它更能提现cassadra的数据结构。column familiy是由row构成，每一个row是一个key-value pair。row的key叫做row key,row 的value是有序的cells集合。在内部，每个column-family存储于单独的文件，column-family之间没有关联关系，因此需要应用程序自己维护他们之间的关系。尽管在CQL3中，它叫做table，但它与关系型数据库的table有很大不同，它可以是个schema-free的map。例如下面的例子，它是一个动态的column familiy, row key是日期，每一个column代表一个城市，value是当天访问该城市的人数。
 
-![city]({{ site.baseurl }}/img/maserCass2/city.PNG)
+![city]({{ site.baseurl }}/img/masterCass2/city.PNG)
 
 你可以定义一个与关系型数据库行为类似的column-family,也可以定义一个key-value序列的Key-value pairs，前者称为static或narrow column-family,后者叫做dynamic或wide column-family。dynamic column-family在CQL3里没有过多的提及，但是当你使用compound key创建TBALE时，你就创建了一个dynamic column-family。
 
@@ -144,4 +144,4 @@ Cassandra不像关系型数据库一样可以对任何字段进行条件查询�
 
 * 极端low cardinality的列：例如布尔类型的列，如果对布尔类型的列创建索引，那么每个节点都会有两个很巨大的row，一个row key是true, 一个row key是false。如果true/false是平均分配，对于一个有4千万的表，查询等于true或false的记录，结果将会有2千万个，这样会搞垮服务器
 
-* 频繁update或删除的列。每当删除一个列，cassadra会把它标记一个tombstone,当tombstone数量超过配置的值（默认是100,000cells），cassadra会查询失败。
+* 频繁update或删除的列。每当删除一个列，cassadra会把它标记一个tombstone, 当tombstone数量超过配置的值（默认是100,000cells），cassadra会查询失败。

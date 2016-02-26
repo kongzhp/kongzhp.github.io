@@ -117,44 +117,28 @@ cassandra的主要组件架构如下图所示：
 
 MemTable是一个colomn familiy在内存的存放方式，可以认为是缓存，它用row key进行排序。不像commit log，它不是append-only,它没有重复的数据。以下是例子：
 
-Write 1: {k1: [{c1, v1}, {c2,v2}, {c3, v3}]}
+    Write 1: {k1: [{c1, v1}, {c2,v2}, {c3, v3}]}
+    In CommitLog (new entry, append):
+    {k1: [{c1, v1},{c2, v2}, {c3,v3}]}
+    In MemTable (new entry, append):
+    {k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
 
-In CommitLog (new entry, append):
+    Write 2: {k2: [{c4, v4}]}
+    In CommitLog (new entry, append):
+    {k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
+    {k2: [{c4, v4}]}
+    In MemTable (new entry, append):
+    {k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
+    {k2: [{c4, v4}]}
 
-{k1: [{c1, v1},{c2, v2}, {c3,v3}]}
-In MemTable (new entry, append):
-
-{k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
-
-Write 2: {k2: [{c4, v4}]}
-
-In CommitLog (new entry, append):
-
-{k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
-
-{k2: [{c4, v4}]}
-
-In MemTable (new entry, append):
-
-{k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
-
-{k2: [{c4, v4}]}
-
-Write 3: {k1: [{c1, v5}, {c6,v6}]}
-
-In CommitLog (old entry, append):
-
-{k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
-
-{k2: [{c4, v4}]}
-
-{k1: [{c1, v5}, {c6, v6}]}
-
-In MemTable (old entry, update):
-
-{k1: [{c1, v5}, {c2, v2}, {c3,v3}, {c6, v6}]}
-
-{k2: [{c4, v4}]}
+    Write 3: {k1: [{c1, v5}, {c6,v6}]}
+    In CommitLog (old entry, append):
+    {k1: [{c1, v1}, {c2, v2}, {c3,v3}]}
+    {k2: [{c4, v4}]}
+    {k1: [{c1, v5}, {c6, v6}]}
+    In MemTable (old entry, update):
+    {k1: [{c1, v5}, {c2, v2}, {c3,v3}, {c6, v6}]}
+    {k2: [{c4, v4}]}
 
 Bloom filter就像石蕊测试(检测某种化学元素是否存在)，检测某个row是否存在于某个SSTable中。但它是false-positive的，就是说，如果测试结果是true，那么说明可能存在，但是结果是false，那么数据必定不存在于该SSTable。Bloom Filter可以看做是一个长度为L的bit数组，初始是所有元素为0，并且有k个预定义的哈希函数与之关联。
 
@@ -162,20 +146,13 @@ Bloom filter就像石蕊测试(检测某种化学元素是否存在)，检测某
 
 当向某个SSTable插入数据时，先把row key的值v作为参数传给k个哈希函数，再模除L,得出的值作为bit数组的索引，把该位置的元素设置为1。下面的伪代码展示了这个流程：
 
-//calculate hash, mod it to get location in bit array   
-
-arrayIndex1 = md5(v) % arrayLength
-
-arrayIndex2 = sha1(v) %arrayLength
-
-arrayindex3 = murmur(v) %arrayLength
-
-//set all those indexes to 1
-
-bitArray[arrayIndex1] = 1
-
-bitArray[arrayIndex2] = 1
-
-bitArray[arrayIndex3] = 1
+    //calculate hash, mod it to get location in bit array   
+    arrayIndex1 = md5(v) % arrayLength
+    arrayIndex2 = sha1(v) %arrayLength
+    arrayindex3 = murmur(v) %arrayLength
+    //set all those indexes to 1
+    bitArray[arrayIndex1] = 1
+    bitArray[arrayIndex2] = 1
+    bitArray[arrayIndex3] = 1
 
 当检测某个key是否存在于SSTable时，通过做同样的操作，找到数组里该位置的元素，看它是否为1，假如为0，那么肯定不存在，假如为1，那么可能存在，因为可能有别的key计算出来的位置是同一个。
